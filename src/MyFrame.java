@@ -16,13 +16,12 @@ public class MyFrame extends JFrame {
 
     private String title;
     private Dimension d;
-    private JButton addTaskButton = new JButton("Додати завдання");
-    private JButton deleteTaskButton = new JButton("Видалити завдання");
-    private JButton showButton = new JButton("Показати історію завдань");
-    private JPanel panel1 = new JPanel();
+    private JButton addTaskButton = new JButton("Add");
+    private JButton deleteTaskButton = new JButton("Delete");
+    private JButton showButton = new JButton("History");
+    private JButton doneButton = new JButton("Done");
     private JPanel panel2 = new JPanel();
     private JPanel panel3 = new JPanel();
-    private JLabel label = new JLabel("Список завданнь");
     private MyTableModel mtb = new MyTableModel();
     private JTable table = new JTable(mtb);
     private JScrollPane scrollPane = new JScrollPane(table);
@@ -53,22 +52,16 @@ public class MyFrame extends JFrame {
         setResizable(true);
         mtb.setDataSource(rs);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-        add(panel1, BorderLayout.NORTH);
         add(panel2, BorderLayout.CENTER);
         add(panel3, BorderLayout.SOUTH);
-        panel1.setLayout(new GridLayout(1, 1));
         panel2.setLayout(new GridLayout(1, 0));
-        panel3.setLayout(new GridLayout(1, 3));
-        panel1.add(label);
+        panel3.setLayout(new GridLayout(1, 4));
         panel2.add(scrollPane);
         panel3.add(addTaskButton);
         panel3.add(showButton);
+        panel3.add(doneButton);
         panel3.add(deleteTaskButton);
-        //**/*/*/*/***///table.getSelectedRow();
-
         pack();
-
 
 
     }
@@ -76,15 +69,15 @@ public class MyFrame extends JFrame {
     public class AddTaskActionListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
-            JFrame addTaskWindow = new JFrame("Додати завдання");
-            addTaskWindow.setLocationRelativeTo(panel1);
+            JFrame addTaskWindow = new JFrame("Add");
+            addTaskWindow.setLocationRelativeTo(panel2);
             addTaskWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             addTaskWindow.setSize(350, 120);
 
             addTaskWindow.setVisible(true);
-            JLabel label = new JLabel("Введіть завдання");
+            JLabel label = new JLabel("Enter task");
             JTextField textField1 = new JTextField();
-            JButton button = new JButton("Додати");
+            JButton button = new JButton("Add");
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -109,7 +102,7 @@ public class MyFrame extends JFrame {
                     }
                 }
             });
-            JButton button2 = new JButton("Відміна");
+            JButton button2 = new JButton("Cancel");
             button2.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -127,7 +120,7 @@ public class MyFrame extends JFrame {
             panel.add(textField1);
             panel4.add(button);
             panel4.add(button2);
-        //    addTaskWindow.pack();
+            table.clearSelection();
         }
     }
     public class ShowTaskActionListener implements ActionListener{
@@ -136,7 +129,7 @@ public class MyFrame extends JFrame {
             MyTableModel mtb2 = new MyTableModel();
             ResultSet resultSet = null;
             try {
-                resultSet = statement.executeQuery("SELECT * FROM deleted");
+                resultSet = statement.executeQuery("SELECT * FROM done");
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
@@ -147,16 +140,14 @@ public class MyFrame extends JFrame {
             } catch (ClassNotFoundException e1) {
                 e1.printStackTrace();
             }
-            JFrame showTaskWindow = new JFrame("Історія завдань");
+            JFrame showTaskWindow = new JFrame("Todoshka");
             showTaskWindow.setVisible(true);
-            showTaskWindow.setLocationRelativeTo(panel1);
-            JLabel label = new JLabel("Історія завдань");
+            showTaskWindow.setLocationRelativeTo(panel2);
             JTable table1 = new JTable(mtb2);
             JScrollPane jScrollPane = new JScrollPane(table1);
-            JButton button = new JButton("Закрити");
+            JButton button = new JButton("Close");
             JPanel panel = new JPanel(new BorderLayout());
             showTaskWindow.add(panel);
-            panel.add(label, BorderLayout.NORTH);
             panel.add(jScrollPane, BorderLayout.CENTER);
             panel.add(button, BorderLayout.SOUTH);
             button.addActionListener(new ActionListener() {
@@ -179,7 +170,7 @@ public class MyFrame extends JFrame {
             if( i >= 0) {
                 model = table.getModel();
                 Object s = model.getValueAt(i, j);
-                String SQL = "INSERT INTO deleted " + "VALUES('"+ s + "')";
+                String SQL = "DELETE FROM task WHERE list ='" + s + "'";
                 mtb.removeRow(i);
                 try {
                     statement.execute(SQL);
@@ -190,7 +181,7 @@ public class MyFrame extends JFrame {
             } else {
               JFrame frame = new JFrame("Error");
                 JPanel panel = new JPanel();
-                JLabel label = new JLabel("Виберіть завдання, яке хочете видалити!");
+                JLabel label = new JLabel("Select the task, which you want to delete");
                 frame.setVisible(true);
                 frame.setSize(new Dimension(300, 100));
                 frame.setResizable(false);
@@ -200,6 +191,23 @@ public class MyFrame extends JFrame {
 
             }
 
+        }
+    }
+    public class DoneTaskActionlistener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int i = table.getSelectedRow();
+            int j = table.getSelectedColumn();
+            TableModel model = new MyTableModel();
+                model = table.getModel();
+                Object s = model.getValueAt(i, j);
+                String SQL = "INSERT INTO done " + "VALUES('"+ s + "')";
+                mtb.removeRow(i);
+                try {
+                    statement.execute(SQL);
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
         }
     }
     }

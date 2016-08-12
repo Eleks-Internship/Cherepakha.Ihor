@@ -31,7 +31,6 @@ public class MyFrame extends JFrame {
     private ConnectDB con = new ConnectDB();
     private Statement statement = con.getConnection().createStatement();
     ResultSet rs = statement.executeQuery("SELECT * FROM task");
-
     //
     public MyFrame(String title, Dimension d) throws SQLException {
         this.title = title;
@@ -39,7 +38,6 @@ public class MyFrame extends JFrame {
     }
 
     public void init() throws ClassNotFoundException, SQLException {
-
         setTitle(title);
         setSize(d);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -63,8 +61,6 @@ public class MyFrame extends JFrame {
         panel3.add(doneButton);
         panel3.add(deleteTaskButton);
         pack();
-
-
     }
 
     //action listeners
@@ -122,7 +118,6 @@ public class MyFrame extends JFrame {
             panel.add(textField1);
             panel4.add(button);
             panel4.add(button2);
-            table.clearSelection();
         }
     }
 
@@ -219,14 +214,25 @@ public class MyFrame extends JFrame {
 
             } else {
                 JFrame frame = new JFrame("Error");
+                frame.setLayout(new BorderLayout());
                 JPanel panel = new JPanel();
+                JPanel panel1 = new JPanel();
+                JButton button = new JButton("OK");
+                frame.add(panel, BorderLayout.NORTH);
+                frame.add(panel1, BorderLayout.SOUTH);
                 JLabel label = new JLabel("Please, select the completed task");
                 frame.setVisible(true);
                 frame.setSize(new Dimension(300, 100));
                 frame.setResizable(false);
                 frame.setLocationRelativeTo(panel2);
-                frame.add(panel);
                 panel.add(label);
+                panel1.add(button);
+                button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        frame.setVisible(false);
+                    }
+                });
 
             }
         }

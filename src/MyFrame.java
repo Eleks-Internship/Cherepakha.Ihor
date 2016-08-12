@@ -48,6 +48,7 @@ public class MyFrame extends JFrame {
         addTaskButton.addActionListener(new AddTaskActionListener());
         showButton.addActionListener(new ShowTaskActionListener());
         deleteTaskButton.addActionListener(new DeleteTaskActionListener());
+        doneButton.addActionListener(new DoneTaskActionlistener());
         setVisible(true);
         setResizable(true);
         mtb.setDataSource(rs);
@@ -65,8 +66,9 @@ public class MyFrame extends JFrame {
 
 
     }
+
     //action listeners
-    public class AddTaskActionListener implements ActionListener{
+    public class AddTaskActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             JFrame addTaskWindow = new JFrame("Add");
@@ -83,7 +85,7 @@ public class MyFrame extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         String s = textField1.getText();
-                        String insertSQL = "INSERT INTO TASK " + "VALUES('"+ s + "')";
+                        String insertSQL = "INSERT INTO TASK " + "VALUES('" + s + "')";
                         statement.execute(insertSQL);
                         //
                         ResultSet resultSet = statement.executeQuery("SELECT * FROM task");
@@ -123,7 +125,8 @@ public class MyFrame extends JFrame {
             table.clearSelection();
         }
     }
-    public class ShowTaskActionListener implements ActionListener{
+
+    public class ShowTaskActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             MyTableModel mtb2 = new MyTableModel();
@@ -161,25 +164,26 @@ public class MyFrame extends JFrame {
         }
 
     }
-    public class DeleteTaskActionListener implements ActionListener{
+
+    public class DeleteTaskActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             int i = table.getSelectedRow();
             int j = table.getSelectedColumn();
             TableModel model = new MyTableModel();
-            if( i >= 0) {
+            if (i >= 0) {
                 model = table.getModel();
                 Object s = model.getValueAt(i, j);
-                String SQL = "DELETE FROM task WHERE list ='" + s + "'";
+                String sql = "DELETE FROM task WHERE list ='" + s + "'";
                 mtb.removeRow(i);
                 try {
-                    statement.execute(SQL);
+                    statement.execute(sql);
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
 
             } else {
-              JFrame frame = new JFrame("Error");
+                JFrame frame = new JFrame("Error");
                 JPanel panel = new JPanel();
                 JLabel label = new JLabel("Select the task, which you want to delete");
                 frame.setVisible(true);
@@ -193,21 +197,38 @@ public class MyFrame extends JFrame {
 
         }
     }
-    public class DoneTaskActionlistener implements ActionListener{
+
+    public class DoneTaskActionlistener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             int i = table.getSelectedRow();
             int j = table.getSelectedColumn();
             TableModel model = new MyTableModel();
+            if (i >= 0) {
                 model = table.getModel();
                 Object s = model.getValueAt(i, j);
-                String SQL = "INSERT INTO done " + "VALUES('"+ s + "')";
+                String sql = "INSERT INTO done " + "VALUES('" + s + "')";
+                String sql1 = "DELETE FROM task WHERE list ='" + s + "'";
                 mtb.removeRow(i);
                 try {
-                    statement.execute(SQL);
+                    statement.execute(sql);
+                    statement.execute(sql1);
                 } catch (SQLException e1) {
                     e1.printStackTrace();
                 }
+
+            } else {
+                JFrame frame = new JFrame("Error");
+                JPanel panel = new JPanel();
+                JLabel label = new JLabel("Please, select the completed task");
+                frame.setVisible(true);
+                frame.setSize(new Dimension(300, 100));
+                frame.setResizable(false);
+                frame.setLocationRelativeTo(panel2);
+                frame.add(panel);
+                panel.add(label);
+
+            }
         }
     }
-    }
+}

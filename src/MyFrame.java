@@ -68,7 +68,7 @@ public class MyFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             JFrame addTaskWindow = new JFrame("Add");
-            addTaskWindow.setLocationRelativeTo(panel2);
+            addTaskWindow.setLocationRelativeTo(null);
             addTaskWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             addTaskWindow.setSize(350, 120);
 
@@ -128,10 +128,6 @@ public class MyFrame extends JFrame {
             ResultSet resultSet = null;
             try {
                 resultSet = statement.executeQuery("SELECT * FROM done");
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
-            try {
                 mtb2.setDataSource(resultSet);
             } catch (SQLException e1) {
                 e1.printStackTrace();
@@ -140,18 +136,63 @@ public class MyFrame extends JFrame {
             }
             JFrame showTaskWindow = new JFrame("Todoshka");
             showTaskWindow.setVisible(true);
-            showTaskWindow.setLocationRelativeTo(panel2);
+            showTaskWindow.setLocationRelativeTo(null);
             JTable table1 = new JTable(mtb2);
             JScrollPane jScrollPane = new JScrollPane(table1);
             JButton button = new JButton("Close");
+            JButton button2 = new JButton("Clear");
             JPanel panel = new JPanel(new BorderLayout());
+            JPanel panel1 = new JPanel();
             showTaskWindow.add(panel);
             panel.add(jScrollPane, BorderLayout.CENTER);
-            panel.add(button, BorderLayout.SOUTH);
+            panel.add(panel1, BorderLayout.SOUTH);
+            panel1.add(button2);
+            panel1.add(button);
+            button2.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFrame jFrame = new JFrame("Done");
+                    JPanel jPanel = new JPanel(new BorderLayout());
+                    JButton jButton = new JButton("OK");
+                    JLabel jLabel = new JLabel("All tasks are deleted");
+                    jFrame.setSize(250, 100);
+                    jFrame.setResizable(false);
+                    jFrame.setLocationRelativeTo(null);
+                    jFrame.setVisible(true);
+                    jFrame.add(jPanel);
+                    JPanel jPanel1 = new JPanel();
+                    JPanel jPanel2 = new JPanel();
+                    jPanel.add(jPanel1, BorderLayout.NORTH);
+                    jPanel.add(jPanel2, BorderLayout.SOUTH);
+                    jPanel1.add(jLabel);
+                    jPanel2.add(jButton);
+                    jButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            showTaskWindow.setVisible(false);
+                            jFrame.setVisible(false);
+                        }
+                    });
+
+                    ResultSet resultSet1 = null;
+                    try {
+                        resultSet1 = statement.executeQuery("DELETE FROM done");
+                    } catch (SQLException e1) {
+                        e1.getMessage();
+                    }
+
+                }
+            });
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     showTaskWindow.setVisible(false);
+                }
+            });
+            button2.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
                 }
             });
             showTaskWindow.pack();
@@ -179,14 +220,25 @@ public class MyFrame extends JFrame {
 
             } else {
                 JFrame frame = new JFrame("Error");
+                frame.setLayout(new BorderLayout());
                 JPanel panel = new JPanel();
-                JLabel label = new JLabel("Select the task, which you want to delete");
+                JPanel panel1 = new JPanel();
+                JButton button = new JButton("OK");
+                frame.add(panel, BorderLayout.NORTH);
+                frame.add(panel1, BorderLayout.SOUTH);
+                JLabel label = new JLabel("Please, select the task, which you want to delete");
                 frame.setVisible(true);
                 frame.setSize(new Dimension(300, 100));
                 frame.setResizable(false);
                 frame.setLocationRelativeTo(panel2);
-                frame.add(panel);
                 panel.add(label);
+                panel1.add(button);
+                button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        frame.setVisible(false);
+                    }
+                });
 
             }
 
